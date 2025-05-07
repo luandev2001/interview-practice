@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-@Table(name = "outbox_events")
+@Table
 public class OutboxEvent extends BaseEntity<UUID> {
     private String eventType;
     private String eventId;

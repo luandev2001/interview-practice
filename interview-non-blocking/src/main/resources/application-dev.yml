@@ -16,6 +16,7 @@ spring:
       properties:
         spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
         spring.json.trusted.packages: "*"
+#      max-poll-records: 1000
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
@@ -29,13 +30,14 @@ spring:
               ms: 10000
     listener:
       concurrency: 3
-      ack-mode: manual_immediate
-    retry:
-      topic:
-        enabled: true
-        backoff:
-          multiplier: 2
-          delay: 4000
+#      ack-mode: manual_immediate
+#      type: batch
+#    retry:
+#      topic:
+#        enabled: true
+#        backoff:
+#          multiplier: 2
+#          delay: 4000
 logging:
   level:
     io:
@@ -43,3 +45,8 @@ logging:
         postgresql:
           QUERY: DEBUG
           PARAM: DEBUG
+enable:
+  consumer:
+    single: false
+    batch: false
+  command_runner: false
