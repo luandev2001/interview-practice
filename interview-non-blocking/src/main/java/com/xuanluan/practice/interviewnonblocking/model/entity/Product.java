@@ -9,9 +9,6 @@ import java.util.UUID;
 @Getter
 @Setter
 @Table
-public class UserEvent extends BaseEntity<UUID> {
-    private UUID userId;
-    private String eventType;
-    private String eventId;
-    private String type;
+public class Product extends BaseEntity<UUID> {
+    private String name;
 }

@@ -1,10 +1,9 @@
 package com.xuanluan.practice.interviewnonblocking.repository;
 
-import com.xuanluan.practice.interviewnonblocking.model.entity.UserEvent;
+import com.xuanluan.practice.interviewnonblocking.model.entity.Product;
 import org.springframework.data.r2dbc.repository.R2dbcRepository;
 
 import java.util.UUID;
 
-public interface IUserEventRepository extends R2dbcRepository<UserEvent, UUID> {
-
+public interface IProductRepository extends R2dbcRepository<Product, UUID> {
 }

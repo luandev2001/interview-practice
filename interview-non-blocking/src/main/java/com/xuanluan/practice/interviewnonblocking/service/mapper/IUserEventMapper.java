@@ -5,6 +5,6 @@ import com.xuanluan.practice.interviewnonblocking.model.request.UserEventRequest
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
-public interface UserEventMapper {
+public interface IUserEventMapper {
     UserEvent toUserEvent(UserEventRequest userEventRequest);
 }

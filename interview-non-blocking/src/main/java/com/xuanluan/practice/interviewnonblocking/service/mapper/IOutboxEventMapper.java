@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
-public interface OutboxEventMapper {
+public interface IOutboxEventMapper {
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "eventType", expression = "java(source != null ? source.getClass().getSimpleName() : null)")
     @Mapping(target = "eventId", expression = "java(source != null && source.getId() != null ? String.valueOf(source.getId()) : null)")

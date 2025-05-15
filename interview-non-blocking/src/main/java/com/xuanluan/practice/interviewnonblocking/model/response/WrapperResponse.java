@@ -1,9 +1,9 @@
 package com.xuanluan.practice.interviewnonblocking.model.response;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @Builder

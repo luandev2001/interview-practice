@@ -16,7 +16,7 @@ public class CommandRunnerImp {
 
     @PostConstruct
     public void init() {
-        var size = 10_000;
+        var size = 500;
         for (int i = 0; i < size; i++) {
             kafkaTemplate.send("test-topic", "msg-" + i);
         }
