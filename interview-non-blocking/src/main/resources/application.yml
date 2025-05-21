@@ -2,7 +2,6 @@ spring:
   application:
     name: interview_practice
   profiles:
-    default: dev
+    default: devs
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.xml
-    enabled: false

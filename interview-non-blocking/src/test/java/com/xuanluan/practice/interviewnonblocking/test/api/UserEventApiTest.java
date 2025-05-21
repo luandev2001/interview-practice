@@ -13,7 +13,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.kafka.test.context.EmbeddedKafka;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
@@ -25,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @TestPropertySource(properties = {"enable.kafka.consumer=true"})
 @EmbeddedKafka(partitions = 1, topics = KafkaConstant.Topic.USER_EVENT)
-@DirtiesContext
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UserEventApiTest extends InterviewNonBlockingApplicationTests {
     @Autowired
