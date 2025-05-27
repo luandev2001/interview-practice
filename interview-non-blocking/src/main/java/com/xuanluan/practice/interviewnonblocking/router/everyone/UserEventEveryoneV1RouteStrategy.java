@@ -18,7 +18,6 @@ import reactor.core.publisher.Mono;
 import java.util.UUID;
 
 import static org.springframework.web.reactive.function.server.RequestPredicates.*;
-import static org.springframework.web.reactive.function.server.RouterFunctions.nest;
 
 @RequiredArgsConstructor
 @Component
@@ -28,7 +27,7 @@ public class UserEventEveryoneV1RouteStrategy implements IEveryoneRouteStrategy 
 
     @Override
     public RouterFunction<ServerResponse> route() {
-        return nest(
+        return RouterFunctions.nest(
                 path("user_events"),
                 RouterFunctions.route(POST(""), this::create)
                         .andRoute(GET("/{id}"), this::getById)

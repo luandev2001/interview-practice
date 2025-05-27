@@ -21,13 +21,11 @@
 
 ## Chi tiết xử lý
 1. Ghi nhận hành vi người dùng
-- Mỗi khi user click/sự kiện xảy ra → gọi API /track-event (non-blocking).
+- Mỗi khi user click/sự kiện xảy ra → gọi API POST /user-events (non-blocking).
 
 - Dữ liệu gửi lên bao gồm: user_id, timestamp, event_type, product_id, search_term,...
 
 - Spring WebFlux xử lý sự kiện này → push vào Kafka topic user-events.
-
-* Gợi ý: Dùng KafkaTemplate<String, UserEvent> hoặc reactive reactor-kafka nếu muốn non-blocking end-to-end.
 
 2. Xử lý bất đồng bộ với Kafka
 - Consumer (Spring Boot app) lắng nghe topic user-events:

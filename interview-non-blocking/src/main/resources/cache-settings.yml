@@ -1,0 +1,6 @@
+cache:
+  ttl:
+    caffeine:
+      product: 30m
+    redis:
+      product: 15m

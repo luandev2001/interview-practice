@@ -4,11 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.relational.core.mapping.Table;
 
-import java.util.UUID;
-
 @Getter
 @Setter
 @Table
-public class Product extends BaseEntity<UUID> {
+public class Product extends BaseEntity<Long> {
     private String name;
 }

@@ -25,6 +25,10 @@
             <column name="processed_at" type="TIMESTAMP"/>
             <column name="retries" type="INT" defaultValueNumeric="0"/>
         </createTable>
+
+        <rollback>
+            <dropTable tableName="outbox_event"/>
+        </rollback>
     </changeSet>
 
 </databaseChangeLog>

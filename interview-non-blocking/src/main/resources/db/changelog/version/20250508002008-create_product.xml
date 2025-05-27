@@ -7,7 +7,7 @@
 
     <changeSet id="20250508002008-create_product" author="xuanluan">
         <createTable tableName="product">
-            <column name="id" type="UUID" defaultValueComputed="gen_random_uuid()">
+            <column name="id" type="bigserial">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="created_at" type="TIMESTAMP" defaultValueComputed="now()"/>
@@ -17,6 +17,10 @@
                 <constraints nullable="false" />
             </column>
         </createTable>
+
+        <rollback>
+            <dropTable tableName="product"/>
+        </rollback>
     </changeSet>
 
 </databaseChangeLog>

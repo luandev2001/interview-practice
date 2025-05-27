@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono;
 
 @Slf4j
 @RestControllerAdvice
-public class GlobalExceptionHandler  extends WebFluxResponseStatusExceptionHandler {
+public class GlobalExceptionHandler extends WebFluxResponseStatusExceptionHandler {
     @ExceptionHandler(BadRequestException.class)
     public Mono<ResponseEntity<WrapperResponse<?>>> handleKafkaException(BadRequestException e) {
         log.error(e.getMessage(), e);
@@ -21,7 +21,7 @@ public class GlobalExceptionHandler  extends WebFluxResponseStatusExceptionHandl
                 ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(
                                 WrapperResponse.builder()
-                                        .message("Lỗi dữ liệu")
+                                        .message(e.getMessage())
                                         .build()
                         )
         );

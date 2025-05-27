@@ -8,7 +8,7 @@ spring:
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
-      #      group-id: my-consumer-group
+      group-id: interview_practice
       auto-offset-reset: earliest
       enable-auto-commit: false
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
@@ -45,8 +45,3 @@ logging:
         postgresql:
           QUERY: DEBUG
           PARAM: DEBUG
-enable:
-  consumer:
-    single: false
-    batch: false
-  command_runner: false
