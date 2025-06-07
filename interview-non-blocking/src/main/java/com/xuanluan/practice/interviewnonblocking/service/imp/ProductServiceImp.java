@@ -8,6 +8,7 @@ import com.xuanluan.practice.interviewnonblocking.model.request.ProductRequest;
 import com.xuanluan.practice.interviewnonblocking.repository.IOutboxEventRepository;
 import com.xuanluan.practice.interviewnonblocking.repository.IProductRepository;
 import com.xuanluan.practice.interviewnonblocking.service.IProductService;
+import com.xuanluan.practice.interviewnonblocking.service.kafka.producer.ElasticsearchProducer;
 import com.xuanluan.practice.interviewnonblocking.service.mapper.IOutboxEventMapper;
 import com.xuanluan.practice.interviewnonblocking.service.mapper.IProductMapper;
 import lombok.RequiredArgsConstructor;
@@ -25,18 +26,24 @@ public class ProductServiceImp implements IProductService {
     private final IOutboxEventRepository outboxEventRepository;
     private final IOutboxEventMapper outboxEventMapper;
     private final TransactionalOperator transactionalOperator;
+    private final ElasticsearchProducer elasticsearchProducer;
 
     @Override
     public Mono<Product> create(ProductRequest productRequest) {
         return Mono.just(productRequest)
                 .flatMap(this::validateCreate)
-                .then(Mono.defer(() -> productRepository.save(productMapper.toProduct(productRequest))
-                        .flatMap(product -> {
-                            OutboxEvent outboxEvent = outboxEventMapper.toOutboxEvent(product);
-                            outboxEvent.setType(ServiceConstant.OutboxType.CREATE);
-                            return outboxEventRepository.save(outboxEvent).thenReturn(product);
-                        })))
-                .as(transactionalOperator::transactional);
+                .then(Mono.defer(() ->
+                        productRepository.save(productMapper.toProduct(productRequest))
+                                .flatMap(product -> {
+                                    OutboxEvent outboxEvent = outboxEventMapper.toOutboxEvent(product);
+                                    outboxEvent.setType(ServiceConstant.OutboxType.CREATE);
+                                    return outboxEventRepository.save(outboxEvent).thenReturn(product);
+                                })))
+                .as(transactionalOperator::transactional)
+                .map(product -> {
+                    elasticsearchProducer.toElasticsearch(product);
+                    return product;
+                });
     }
 
     private Mono<Void> validateCreate(ProductRequest productRequest) {

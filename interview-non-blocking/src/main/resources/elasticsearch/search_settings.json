@@ -1,0 +1,42 @@
+{
+  "analysis": {
+    "analyzer": {
+      "search_no_diacritics": {
+        "type": "custom",
+        "tokenizer": "standard",
+        "filter": [
+          "lowercase",
+          "asciifolding",
+          "english_stop",
+          "kstem"
+        ],
+        "char_filter": [
+          "html_strip"
+        ]
+      }
+    },
+    "tokenizer": {
+      "trigram": {
+        "type": "ngram",
+        "min_gram": 3,
+        "max_gram": 3,
+        "token_chars": [
+          "letter",
+          "digit"
+        ]
+      }
+    },
+    "filter": {
+      "english_stop": {
+        "type": "stop",
+        "ignore_case": true,
+        "stopwords": [
+          "how",
+          "to",
+          "what",
+          "_english_"
+        ]
+      }
+    }
+  }
+}

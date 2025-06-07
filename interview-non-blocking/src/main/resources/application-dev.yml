@@ -30,14 +30,8 @@ spring:
               ms: 10000
     listener:
       concurrency: 3
-#      ack-mode: manual_immediate
-#      type: batch
-#    retry:
-#      topic:
-#        enabled: true
-#        backoff:
-#          multiplier: 2
-#          delay: 4000
+  elasticsearch:
+    uris: http://localhost:9200
 logging:
   level:
     io:
@@ -45,3 +39,8 @@ logging:
         postgresql:
           QUERY: DEBUG
           PARAM: DEBUG
+    org:
+      elasticsearch:
+        client: DEBUG
+      apache:
+        http.wire: INFO
