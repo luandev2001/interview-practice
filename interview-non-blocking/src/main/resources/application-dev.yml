@@ -44,3 +44,11 @@ logging:
         client: DEBUG
       apache:
         http.wire: INFO
+elasticsearch:
+  migrate: false
+quartz:
+  clockwork:
+    enable: true
+kafka:
+  consumer:
+    enable: true

@@ -24,6 +24,9 @@
             <column name="payload" type="JSONB" defaultValue="{}"/>
             <column name="processed_at" type="TIMESTAMP"/>
             <column name="retries" type="INT" defaultValueNumeric="0"/>
+            <column name="class_package" type="VARCHAR(300)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
         <rollback>

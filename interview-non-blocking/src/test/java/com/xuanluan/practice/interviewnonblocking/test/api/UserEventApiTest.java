@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@TestPropertySource(properties = {"enable.kafka.consumer=true"})
+@TestPropertySource(properties = {"kafka.consumer.enable=true"})
 @EmbeddedKafka(partitions = 1, topics = KafkaConstant.Topic.USER_EVENT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UserEventApiTest extends InterviewNonBlockingApplicationTests {

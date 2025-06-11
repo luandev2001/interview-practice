@@ -14,10 +14,6 @@ public class ServiceConstant {
         public static final Duration CACHE_EXPIRE_TIME = Duration.ofMinutes(5);
     }
 
-    public static class OutboxType {
-        public static final String CREATE = "create";
-    }
-
     public static class ElasticSearch {
         public static final Map<String, Class<? extends BaseDocument>> MAPPINGS = Map.of(
                 Product.class.getSimpleName(), ProductDocument.class,

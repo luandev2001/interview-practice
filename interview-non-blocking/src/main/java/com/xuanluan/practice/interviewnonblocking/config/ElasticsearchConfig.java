@@ -11,18 +11,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.ReactiveIndexOperations;
-import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
 
-@ConditionalOnProperty(name = "elasticsearch.migrate.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "elasticsearch.migrate", havingValue = "true")
 @Slf4j
 @RequiredArgsConstructor
 @Configuration
 public class ElasticsearchConfig {
     private final ReactiveElasticsearchOperations reactiveElasticsearchOperations;
-    private final R2dbcEntityOperations entityOperations;
 
     @EventListener(ApplicationReadyEvent.class)
     public void createIndexes() {

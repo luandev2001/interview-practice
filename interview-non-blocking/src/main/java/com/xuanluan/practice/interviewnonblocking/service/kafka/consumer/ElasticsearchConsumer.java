@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xuanluan.practice.interviewnonblocking.constant.KafkaConstant;
 import com.xuanluan.practice.interviewnonblocking.constant.ServiceConstant;
 import com.xuanluan.practice.interviewnonblocking.model.document.BaseDocument;
+import com.xuanluan.practice.interviewnonblocking.model.entity.BaseEntity;
+import com.xuanluan.practice.interviewnonblocking.model.entity.OutboxEvent;
 import com.xuanluan.practice.interviewnonblocking.model.request.ElasticsearchRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +14,7 @@ import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperatio
 import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
 import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.data.relational.core.query.Query;
+import org.springframework.data.relational.core.query.Update;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Service;
@@ -20,10 +23,11 @@ import reactor.util.retry.Retry;
 
 import java.lang.reflect.Field;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-@ConditionalOnProperty(name = "enable.kafka.consumer", havingValue = "true")
+@ConditionalOnProperty(name = "kafka.consumer.enable", havingValue = "true")
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -38,11 +42,12 @@ public class ElasticsearchConsumer {
                     Class<? extends BaseDocument> documentClass = ServiceConstant.ElasticSearch.MAPPINGS.get(entityClass.getSimpleName());
                     return getById(request.objectId(), getColumns(documentClass), entityClass).flatMap(record -> {
                         Object document = objectMapper.convertValue(record, documentClass);
-                        return elasticsearchOperations.save(document);
+                        return elasticsearchOperations.save(document).thenReturn(record);
                     });
                 })
                 .retryWhen(Retry.backoff(2, Duration.ofSeconds(1)))
-                .doOnError(e -> log.error("Failed to process ElasticsearchRequest: {}", request, e))
+                .doOnSuccess(this::confirmOutboxEvent)
+                .doOnError(e -> log.error("Failed to process ElasticsearchRequest!", e))
                 .doFinally(signal -> {
                     ack.acknowledge();
                     log.info("Finished processing with signal: {}", signal);
@@ -50,15 +55,15 @@ public class ElasticsearchConsumer {
                 .subscribe();
     }
 
-    private <T> Mono<T> getById(Object id, List<String> columns, Class<T> entityClass) {
+    private <T extends BaseEntity<?>> Mono<T> getById(Object id, List<String> columns, Class<T> entityClass) {
         Criteria criteria = Criteria.where("id").is(id);
         Query query = Query.query(criteria).columns(columns);
         return entityOperations.selectOne(query, entityClass);
     }
 
-    private Mono<Class<?>> getClass(String className) {
+    private Mono<Class<? extends BaseEntity<?>>> getClass(String className) {
         try {
-            return Mono.just(Class.forName(className));
+            return Mono.just((Class<? extends BaseEntity<?>>) Class.forName(className));
         } catch (ClassNotFoundException e) {
             return Mono.error(new IllegalArgumentException("Not found class: " + className, e));
         }
@@ -73,5 +78,12 @@ public class ElasticsearchConsumer {
         for (Field field : parentFields) columns.add(field.getName());
 
         return columns;
+    }
+
+    private <T extends BaseEntity<?>> void confirmOutboxEvent(T entity) {
+        Criteria criteria = Criteria.where("eventType").is(entity.getClass().getSimpleName())
+                .and("eventId").is(entity.getId())
+                .and("type").is(KafkaConstant.Topic.SAVE_ES);
+        entityOperations.update(Query.query(criteria), Update.update("processedAt", Instant.now()), OutboxEvent.class).subscribe();
     }
 }

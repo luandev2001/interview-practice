@@ -33,3 +33,10 @@ spring:
               ms: 10000
     listener:
       concurrency: 3
+logging:
+  level:
+    io:
+      r2dbc:
+        postgresql:
+          QUERY: DEBUG
+          PARAM: DEBUG

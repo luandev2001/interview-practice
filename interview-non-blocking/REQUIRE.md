@@ -38,8 +38,6 @@
 
 * Gợi ý:
 
-- Dùng batch consumer (@KafkaListener(batch = true))
-
 - Sử dụng thread pool cho việc xử lý song song
 
 - Dùng Spring Retry cho lỗi tạm thời khi ghi xuống Elasticsearch

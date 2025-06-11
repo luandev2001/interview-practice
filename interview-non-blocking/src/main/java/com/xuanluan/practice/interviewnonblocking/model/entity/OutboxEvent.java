@@ -18,4 +18,5 @@ public class OutboxEvent extends BaseEntity<UUID> {
     private int retries;
     private Json payload;
     private Instant processedAt;
+    private String classPackage;
 }

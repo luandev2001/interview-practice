@@ -11,7 +11,7 @@ import org.springframework.kafka.annotation.RetryableTopic;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Service;
 
-@ConditionalOnProperty(name = "enable.kafka.consumer", havingValue = "true")
+@ConditionalOnProperty(name = "kafka.consumer.enable", havingValue = "true")
 @RequiredArgsConstructor
 @Slf4j
 @Service
