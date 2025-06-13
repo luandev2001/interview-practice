@@ -43,7 +43,7 @@ public class JobClockworkServiceImp {
         );
     }
 
-    public JobBuilder buildJob(Class<? extends Job> jobClass) {
+    private JobBuilder buildJob(Class<? extends Job> jobClass) {
         return JobBuilder.newJob(jobClass)
                 .withIdentity(Key.createUniqueName(null), jobClass.getSimpleName())
                 .storeDurably()
