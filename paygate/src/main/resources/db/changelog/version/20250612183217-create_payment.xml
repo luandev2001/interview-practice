@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="20250612183217-create_payment" author="xuanluan">
+        <createTable tableName="payment">
+            <column name="id" type="uuid" defaultValueComputed="gen_random_uuid()">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamp" defaultValueComputed="now()"/>
+            <column name="updated_at" type="timestamp" defaultValueComputed="now()"/>
+            <!-- Add changes here -->
+            <column name="user_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="int" defaultValueNumeric="0"/>
+            <column name="amount" type="decimal" defaultValueNumeric="0"/>
+            <column name="received_amount" type="decimal" defaultValueNumeric="0"/>
+            <column name="fee" type="decimal" defaultValueNumeric="0"/>
+            <column name="type" type="int" defaultValueNumeric="0"/>
+            <column name="rate" type="decimal" defaultValueNumeric="0"/>
+            <column name="currency" type="varchar(25)" defaultValue="VND"/>
+            <column name="payment_method_id" type="uuid">
+                <constraints references="payment_method(id)" deleteCascade="true" validateForeignKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

@@ -13,11 +13,11 @@ if [[ $1 == create_* ]]; then
   table_name=$(echo "$1" | sed 's/^create_//')
   inner_content=$(cat <<EOF
         <createTable tableName="$table_name">
-            <column name="id" type="UUID" defaultValueComputed="gen_random_uuid()">
+            <column name="id" type="uuid" defaultValueComputed="gen_random_uuid()">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="created_at" type="TIMESTAMP" defaultValueComputed="now()"/>
-            <column name="updated_at" type="TIMESTAMP" defaultValueComputed="now()"/>
+            <column name="created_at" type="timestamp" defaultValueComputed="now()"/>
+            <column name="updated_at" type="timestamp" defaultValueComputed="now()"/>
             <!-- Add changes here -->
         </createTable>
 EOF

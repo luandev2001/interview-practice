@@ -1,0 +1,11 @@
+external:
+  vnpay:
+    url: https://sandbox.vnpayment.vn
+    returnUrl: https://yourapp.com/return
+    hashSecret: your-secret
+    tmnCode: your-code
+    command: pay
+    time:
+      formatter: yyyyMMddHHmmss
+      zone: Etc/GMT+7
+      expireMinute: 20
