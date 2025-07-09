@@ -1,10 +1,10 @@
 package com.xuanluan.practice.paygate.service;
 
-import com.xuanluan.practice.paygate.model.entity.Payment;
 import com.xuanluan.practice.paygate.model.request.DepositRequest;
+import com.xuanluan.practice.paygate.model.response.DepositResponse;
 
 public interface IPaymentService {
-    Payment deposit(DepositRequest request);
+    DepositResponse deposit(DepositRequest request);
 
-    String getType();
+    String getMethodCode();
 }

@@ -1,18 +1,21 @@
 package com.xuanluan.practice.paygate.model.entity;
 
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import com.xuanluan.practice.paygate.model.entity.listener.BaseEntityListener;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Getter
 @Setter
 @MappedSuperclass
+@EntityListeners(BaseEntityListener.class)
 public class BaseEntity {
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
     private Instant createdAt;
     private Instant updatedAt;
 }

@@ -2,15 +2,16 @@ spring:
   datasource:
     username: postgres
     password: 123456
-    url: jdbc:postgresql://localhost:5432/test_interview_paygate
+    url: jdbc:postgresql://localhost:5432/test_interview_practice
   jpa:
     hibernate:
-      ddl-auto: create-only
+      ddl-auto: none
     show-sql: true
     properties:
       hibernate:
         jdbc:
           time-zone: UTC
+        format_sql: true
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
@@ -33,5 +34,15 @@ spring:
             ms: 10000
             max:
               ms: 10000
-  config:
-    import: classpath:/settings/vn_pay.yml
+  shell:
+    interactive:
+      enabled: true
+logging:
+  level:
+    org:
+      hibernate:
+#        type.descriptor.sql: TRACE
+        engine.transaction: DEBUG
+#        transaction: DEBUG
+      springframework:
+#        transaction: DEBUG

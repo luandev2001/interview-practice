@@ -9,9 +9,10 @@ import java.util.UUID;
 @Getter
 @Setter
 public class TransferRequest {
-    private UUID paymentMethodId;
+    private String paymentMethodCode;
     private BigDecimal amount;
     private String fromCurrency;
     private String toCurrency;
     private UUID userId;
+    private String description;
 }

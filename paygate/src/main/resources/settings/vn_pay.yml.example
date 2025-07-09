@@ -1,11 +1,12 @@
+## add vn_pay.yml file with similar properties
 external:
   vnpay:
-    url: https://sandbox.vnpayment.vn
+    url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
     returnUrl: https://yourapp.com/return
     hashSecret: your-secret
     tmnCode: your-code
     command: pay
     time:
       formatter: yyyyMMddHHmmss
-      zone: Etc/GMT+7
-      expireMinute: 20
+      zone: Asia/Ho_Chi_Minh
+      expireMinute: 60

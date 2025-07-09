@@ -15,6 +15,8 @@ public class VNPayProperty {
     private String version = "2.1.1";
     private String locale = "vn";
     private String command;
+    private String currencyCode = "VND";
+    private String orderType = "other";
     private Time time = new Time();
 
     @Getter

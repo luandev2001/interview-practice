@@ -2,18 +2,24 @@ package com.xuanluan.practice.paygate.service.imp.payment;
 
 import com.xuanluan.practice.paygate.model.entity.Payment;
 import com.xuanluan.practice.paygate.model.entity.PaymentMethod;
+import com.xuanluan.practice.paygate.model.exception.EntityLookupException;
 import com.xuanluan.practice.paygate.model.request.DepositRequest;
 import com.xuanluan.practice.paygate.model.request.TransferRequest;
+import com.xuanluan.practice.paygate.model.response.DepositResponse;
 import com.xuanluan.practice.paygate.repository.IPaymentMethodRepository;
 import com.xuanluan.practice.paygate.repository.IPaymentRepository;
+import com.xuanluan.practice.paygate.repository.scope.PaymentMethodSpec;
 import com.xuanluan.practice.paygate.service.IPaymentService;
 import com.xuanluan.practice.paygate.service.mapper.IPaymentMapper;
-import org.hibernate.FetchNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
-import java.util.UUID;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public abstract class BaseService implements IPaymentService {
     @Autowired
@@ -25,21 +31,23 @@ public abstract class BaseService implements IPaymentService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Payment deposit(DepositRequest request) {
+    public DepositResponse deposit(DepositRequest request) {
         validateDeposit(request);
 
-        Payment payment = buildPaymentDeposit(request);
+        Payment payment = buildDeposit(request);
         payment = paymentRepository.saveAndFlush(payment);
-        handleDeposit(payment);
 
-        return payment;
+        return handleDeposit(payment, request.getMetadata());
     }
 
-    protected abstract void handleDeposit(Payment payment);
+    protected abstract DepositResponse handleDeposit(Payment payment, Map<String, Object> metaData);
 
-    protected Payment buildPaymentDeposit(TransferRequest request) {
+    protected Payment buildDeposit(TransferRequest request) {
         Payment payment = paymentMapper.toPayment(request);
-        payment.setPaymentMethod(getPaymentMethod(request.getPaymentMethodId()));
+        payment.setPaymentMethod(getPaymentMethod(request.getPaymentMethodCode()));
+        payment.setReceivedAmount(request.getAmount());
+        payment.setFee(BigDecimal.ONE);
+        payment.setRate(BigDecimal.ONE);
 
         return payment;
     }
@@ -50,13 +58,17 @@ public abstract class BaseService implements IPaymentService {
 
     protected void validateTransfer(TransferRequest request) {
         Assert.notNull(request, "request can not be null");
-        Assert.notNull(request.getPaymentMethodId(), "payment_method_id can not be null");
+        Assert.notNull(request.getPaymentMethodCode(), "payment_method_code can not be null");
         Assert.notNull(request.getUserId(), "user_id can not be null");
-        Assert.isTrue(request.getAmount().doubleValue() == 0, "amount must be > 0");
+        Assert.isTrue(request.getAmount() != null && request.getAmount().doubleValue() > 0, "amount must be > 0");
+        Assert.isTrue(StringUtils.hasLength(request.getDescription()), "description can not be blank");
     }
 
-    protected PaymentMethod getPaymentMethod(UUID paymentMethodId) {
-        return paymentMethodRepository.findFirstByIdAndCode(paymentMethodId, getType())
-                .orElseThrow(() -> new FetchNotFoundException(PaymentMethod.class.getSimpleName(), paymentMethodId));
+    protected PaymentMethod getPaymentMethod(String code) {
+        PaymentMethod paymentMethod = paymentMethodRepository.findOne(PaymentMethodSpec.activeWithCode(List.of(code)))
+                .orElseThrow(() -> EntityLookupException.build(PaymentMethod.class, Map.of("code", code)));
+        Assert.isTrue(Objects.equals(paymentMethod.getCode(), getMethodCode()), "payment_method is not match");
+
+        return paymentMethod;
     }
 }

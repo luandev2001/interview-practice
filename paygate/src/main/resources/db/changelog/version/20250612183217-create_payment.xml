@@ -16,15 +16,31 @@
             <column name="user_id" type="uuid">
                 <constraints nullable="false"/>
             </column>
-            <column name="status" type="int" defaultValueNumeric="0"/>
-            <column name="amount" type="decimal" defaultValueNumeric="0"/>
-            <column name="received_amount" type="decimal" defaultValueNumeric="0"/>
-            <column name="fee" type="decimal" defaultValueNumeric="0"/>
-            <column name="type" type="int" defaultValueNumeric="0"/>
-            <column name="rate" type="decimal" defaultValueNumeric="0"/>
-            <column name="currency" type="varchar(25)" defaultValue="VND"/>
+            <column name="status" type="int" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount" type="decimal" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="received_amount" type="decimal" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fee" type="decimal" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="int" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rate" type="decimal">
+                <constraints nullable="false"/>
+            </column>
+            <column name="currency" type="varchar(25)" defaultValue="VND">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(500)"/>
             <column name="payment_method_id" type="uuid">
-                <constraints references="payment_method(id)" deleteCascade="true" validateForeignKey="true"/>
+                <constraints references="payment_method(id)" foreignKeyName="fk_payment_method_id"
+                             validateForeignKey="true"/>
             </column>
         </createTable>
     </changeSet>
