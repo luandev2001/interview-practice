@@ -1,21 +1,20 @@
 package com.xuanluan.practice.paygate.model.entity;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.DynamicInsert;
-
-import java.util.List;
 
 @Getter
 @Setter
 @Entity
 @DynamicInsert
-public class PaymentMethod extends BaseEntity {
+public class Bank extends BaseEntity {
     private String name;
     private String code;
+    private String bin;
+    private String shortName;
+    private String swiftCode;
+    private String logo;
     private boolean isDeleted;
-    @OneToMany(mappedBy = "paymentMethod")
-    private List<Payment> payments;
 }

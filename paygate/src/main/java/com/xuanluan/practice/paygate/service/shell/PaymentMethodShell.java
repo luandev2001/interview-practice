@@ -1,6 +1,5 @@
 package com.xuanluan.practice.paygate.service.shell;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xuanluan.practice.paygate.model.entity.PaymentMethod;
 import com.xuanluan.practice.paygate.repository.IPaymentMethodRepository;
 import com.xuanluan.practice.paygate.repository.scope.PaymentMethodSpec;
@@ -9,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,16 +16,15 @@ import java.util.stream.Collectors;
 @ShellComponent
 public class PaymentMethodShell {
     private final IPaymentMethodRepository paymentMethodRepository;
-    private final ObjectMapper objectMapper;
 
     @ShellMethod(key = "payment_method:import", value = "Import payment_methods")
     public void importData() {
         String fileName = "db/seed/payment_methods.json";
-        List<PaymentMethod> allData = FileLoaderUtil.loadFromJson(fileName, objectMapper);
+        List<PaymentMethod> allData = FileLoaderUtil.loadFromJson(fileName, PaymentMethod.class);
 
         Set<String> codes = paymentMethodRepository.findBy(
                 PaymentMethodSpec.activeWithCode(allData.stream().map(PaymentMethod::getCode).collect(Collectors.toList())),
-                query -> new HashSet<>(query.project("code").as(String.class).all())
+                query -> query.all().stream().map(PaymentMethod::getCode).collect(Collectors.toSet())
         );
 
         List<PaymentMethod> newData = allData.stream()

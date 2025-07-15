@@ -39,10 +39,13 @@
             </column>
             <column name="description" type="varchar(500)"/>
             <column name="payment_method_id" type="uuid">
-                <constraints references="payment_method(id)" foreignKeyName="fk_payment_method_id"
+                <constraints references="payment_method(id)" foreignKeyName="fk_payment_payment_method_id"
                              validateForeignKey="true"/>
             </column>
         </createTable>
+        <rollback>
+            <dropTable tableName="payment"/>
+        </rollback>
     </changeSet>
 
 </databaseChangeLog>
