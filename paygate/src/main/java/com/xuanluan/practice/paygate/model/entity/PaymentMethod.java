@@ -4,14 +4,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.DynamicInsert;
 
 import java.util.List;
 
 @Getter
 @Setter
 @Entity
-@DynamicInsert
 public class PaymentMethod extends BaseEntity {
     private String name;
     private String code;
