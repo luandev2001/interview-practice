@@ -67,7 +67,7 @@ public abstract class BaseService implements IPaymentService {
     protected PaymentMethod getPaymentMethod(String code) {
         PaymentMethod paymentMethod = paymentMethodRepository.findOne(PaymentMethodSpec.activeWithCode(List.of(code)))
                 .orElseThrow(() -> EntityLookupException.build(PaymentMethod.class, Map.of("code", code)));
-        Assert.isTrue(Objects.equals(paymentMethod.getCode(), getMethodCode()), "payment_method is not match");
+        Assert.isTrue(Objects.equals(paymentMethod.getCode().name(), getMethodCode()), "payment_method is not match");
 
         return paymentMethod;
     }

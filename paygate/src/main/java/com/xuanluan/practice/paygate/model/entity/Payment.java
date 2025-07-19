@@ -1,13 +1,9 @@
 package com.xuanluan.practice.paygate.model.entity;
 
 import com.xuanluan.practice.paygate.model.constant.PaymentConstant;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.DynamicInsert;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -25,6 +21,7 @@ public class Payment extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private PaymentMethod paymentMethod;
     private String description;
+    @Enumerated(EnumType.ORDINAL)
     private PaymentConstant.Status status;
 
     @PrePersist

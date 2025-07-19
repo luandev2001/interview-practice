@@ -1,10 +1,12 @@
 package com.xuanluan.practice.paygate.service.shell;
 
+import com.xuanluan.practice.paygate.model.constant.PaymentConstant;
 import com.xuanluan.practice.paygate.model.entity.PaymentMethod;
 import com.xuanluan.practice.paygate.repository.IPaymentMethodRepository;
 import com.xuanluan.practice.paygate.repository.scope.PaymentMethodSpec;
 import com.xuanluan.practice.paygate.util.FileLoaderUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,8 +26,15 @@ public class PaymentMethodShell {
         String fileName = "db/seed/payment_methods.json";
         List<PaymentMethod> allData = FileLoaderUtil.loadFromJson(fileName, PaymentMethod.class);
 
-        Set<String> codes = paymentMethodRepository.findAll(PaymentMethodSpec.activeWithCode(allData.stream().map(PaymentMethod::getCode).toList())).stream()
-                .map(PaymentMethod::getCode).collect(Collectors.toSet());
+        Specification<PaymentMethod> spec = PaymentMethodSpec.activeWithCode(
+                allData.stream()
+                        .map(method -> method.getCode().name())
+                        .toList()
+        );
+        Set<PaymentConstant.Method.Code> codes = paymentMethodRepository.findAll(spec)
+                .stream()
+                .map(PaymentMethod::getCode)
+                .collect(Collectors.toSet());
 
         List<PaymentMethod> newData = allData.stream().filter(method -> !codes.contains(method.getCode())).toList();
         if (!newData.isEmpty()) {

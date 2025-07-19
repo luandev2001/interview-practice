@@ -47,6 +47,25 @@ public class VNPayClient {
         return buildQueryString(params);
     }
 
+    public String hashAllFields(Map<String, String> params) {
+        List<String> fieldNames = params.keySet().stream().sorted().toList();
+
+        StringBuilder sb = new StringBuilder();
+        Iterator<String> itr = fieldNames.iterator();
+        while (itr.hasNext()) {
+            String fieldName = itr.next();
+            String fieldValue = params.get(fieldName);
+
+            if (StringUtils.hasLength(fieldValue)) {
+                sb.append(fieldName).append("=").append(fieldValue);
+            }
+
+            if (itr.hasNext()) sb.append("&");
+        }
+
+        return hmacSHA512(sb.toString());
+    }
+
     private Map<String, String> buildDepositDefault() {
         Map<String, String> params = new HashMap<>();
         params.put("vnp_Version", property.getVersion());
@@ -64,40 +83,36 @@ public class VNPayClient {
     }
 
     private String buildQueryString(Map<String, String> params) {
-        List<String> fieldNames = new ArrayList<>(params.keySet());
-        Collections.sort(fieldNames);
+        List<String> fieldNames = params.keySet().stream().sorted().toList();
         StringBuilder rawBuilder = new StringBuilder();
         StringBuilder encodedBuilder = new StringBuilder();
 
         Iterator<String> itr = fieldNames.iterator();
-        var charset = StandardCharsets.US_ASCII.toString();
+        var charset = StandardCharsets.US_ASCII;
         while (itr.hasNext()) {
             String fieldName = itr.next();
             String fieldValue = params.get(fieldName);
             if (StringUtils.hasLength(fieldValue)) {
-                try {
-                    //Build hash data
-                    rawBuilder.append(fieldName).append('=').append(URLEncoder.encode(fieldValue, charset));
-                    //Build query
-                    encodedBuilder.append(URLEncoder.encode(fieldName, charset)).append('=').append(URLEncoder.encode(fieldValue, charset));
-                    if (itr.hasNext()) {
-                        encodedBuilder.append('&');
-                        rawBuilder.append('&');
-                    }
-                } catch (Exception e) {
-                    throw new BadRequestException(e.getMessage(), e);
+                //Build hash data
+                rawBuilder.append(fieldName).append('=').append(URLEncoder.encode(fieldValue, charset));
+                //Build query
+                encodedBuilder.append(URLEncoder.encode(fieldName, charset)).append('=').append(URLEncoder.encode(fieldValue, charset));
+                if (itr.hasNext()) {
+                    encodedBuilder.append('&');
+                    rawBuilder.append('&');
                 }
             }
         }
 
-        String signedValue = hmacSHA512(property.getHashSecret(), rawBuilder.toString());
+        String signedValue = hmacSHA512(rawBuilder.toString());
         encodedBuilder.append("&vnp_SecureHash=").append(signedValue);
 
         return property.getUrl() + "?" + encodedBuilder;
     }
 
-    private String hmacSHA512(final String key, final String data) {
+    private String hmacSHA512(final String data) {
         try {
+            final String key = property.getHashSecret();
             final Mac hmac512 = Mac.getInstance("HmacSHA512");
             final SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(), "HmacSHA512");
             hmac512.init(secretKey);

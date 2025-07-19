@@ -1,43 +1,75 @@
 package com.xuanluan.practice.paygate.service.imp.payment;
 
 import com.xuanluan.practice.paygate.external.VNPayClient;
+import com.xuanluan.practice.paygate.model.constant.PaymentConstant;
 import com.xuanluan.practice.paygate.model.entity.Payment;
-import com.xuanluan.practice.paygate.model.exception.VNPayException;
 import com.xuanluan.practice.paygate.model.request.DepositRequest;
-import com.xuanluan.practice.paygate.model.request.external.VNPayIpnRequest;
 import com.xuanluan.practice.paygate.model.response.DepositResponse;
 import com.xuanluan.practice.paygate.model.response.external.VNPayResponse;
-import com.xuanluan.practice.paygate.service.IIpnService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
-import java.util.Map;
-import java.util.UUID;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 import static com.xuanluan.practice.paygate.model.constant.PaymentConstant.VNPay.*;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
-public class VNPayServiceImp extends BaseService implements IIpnService<VNPayIpnRequest, VNPayResponse> {
+public class VNPayServiceImp extends BaseService {
     private final VNPayClient vnPayClient;
     private final EntityManager entityManager;
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public VNPayResponse ipn(VNPayIpnRequest request) {
-        UUID vnpTxnRef = UUID.fromString(request.vnp_TxnRef());
-        Payment payment = entityManager.find(Payment.class, vnpTxnRef, LockModeType.PESSIMISTIC_WRITE);
-        if (payment == null) {
-            throw new VNPayException("Payment not found", ResponseCode.NOT_FOUND.getCode());
+    public Object ipn(HttpServletRequest request) {
+        var body = new HashMap<String, String>();
+        var charset = StandardCharsets.UTF_8;
+        var skipFields = Set.of("vnp_SecureHash", "vnp_SecureHashType");
+        for (Enumeration<String> params = request.getParameterNames(); params.hasMoreElements(); ) {
+            String fieldName = URLEncoder.encode(params.nextElement(), charset);
+            if (skipFields.contains(fieldName)) continue;
+
+            String fieldValue = URLEncoder.encode(request.getParameter(fieldName), charset);
+            if (StringUtils.hasLength(fieldValue)) body.put(fieldName, fieldValue);
         }
-        return new VNPayResponse("Payment success", ResponseCode.SUCCESS.getCode());
+
+        var signValue = vnPayClient.hashAllFields(body);
+        var vnpSecureHash = request.getParameter("vnp_SecureHash");
+        if (!Objects.equals(signValue, vnpSecureHash)) {
+            return new VNPayResponse("Invalid Checksum", ResponseCode.ANOTHER_ERROR.getCode());
+        }
+
+        var paymentId = UUID.fromString(request.getParameter("vnp_TxnRef"));
+        var payment = entityManager.find(Payment.class, paymentId, LockModeType.PESSIMISTIC_WRITE);
+        if (payment == null) {
+            return new VNPayResponse("Payment Not Found", ResponseCode.ANOTHER_ERROR.getCode());
+        }
+        if (payment.getStatus() == PaymentConstant.Status.NETWORK_CONFIRMED) {
+            log.error("[Payment][Duplicate IPN] Request params: {}", body);
+            return new VNPayResponse("Duplicate Call IPN", ResponseCode.ANOTHER_ERROR.getCode());
+        }
+
+        if (Objects.equals("00", request.getParameter("vnp_ResponseCode"))) {
+            payment.setStatus(PaymentConstant.Status.NETWORK_CONFIRMED);
+        } else {
+            payment.setStatus(PaymentConstant.Status.NETWORK_REVERTED);
+        }
+        return new VNPayResponse("Payment Success", ResponseCode.SUCCESS.getCode());
     }
 
     @Override
     public String getMethodCode() {
-        return "vnpay";
+        return PaymentConstant.Method.Code.vnpay.name();
     }
 
     @Override

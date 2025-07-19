@@ -1,4 +1,4 @@
 package com.xuanluan.practice.paygate.model.response.external;
 
-public record VNPayResponse(String message, String rspCode) {
+public record VNPayResponse(String Message, String RspCode) {
 }
