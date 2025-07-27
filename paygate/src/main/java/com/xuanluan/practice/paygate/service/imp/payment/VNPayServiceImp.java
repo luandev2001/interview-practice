@@ -3,11 +3,10 @@ package com.xuanluan.practice.paygate.service.imp.payment;
 import com.xuanluan.practice.paygate.external.VNPayClient;
 import com.xuanluan.practice.paygate.model.constant.PaymentConstant;
 import com.xuanluan.practice.paygate.model.entity.Payment;
+import com.xuanluan.practice.paygate.model.property.VNPayProperty;
 import com.xuanluan.practice.paygate.model.request.DepositRequest;
 import com.xuanluan.practice.paygate.model.response.DepositResponse;
 import com.xuanluan.practice.paygate.model.response.external.VNPayResponse;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.LockModeType;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +26,7 @@ import static com.xuanluan.practice.paygate.model.constant.PaymentConstant.VNPay
 @Service
 public class VNPayServiceImp extends BaseService {
     private final VNPayClient vnPayClient;
-    private final EntityManager entityManager;
+    private final VNPayProperty property;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -50,15 +49,18 @@ public class VNPayServiceImp extends BaseService {
         }
 
         var paymentId = UUID.fromString(request.getParameter("vnp_TxnRef"));
-        var payment = entityManager.find(Payment.class, paymentId, LockModeType.PESSIMISTIC_WRITE);
+        var payment = paymentRepository.lockById(paymentId).orElse(null);
         if (payment == null) {
             return new VNPayResponse("Payment Not Found", ResponseCode.ANOTHER_ERROR.getCode());
         }
-        if (payment.getStatus() == PaymentConstant.Status.NETWORK_CONFIRMED) {
+        if (payment.getStatus() != PaymentConstant.Status.PENDING) {
             log.error("[Payment][Duplicate IPN] Request params: {}", body);
-            return new VNPayResponse("Duplicate Call IPN", ResponseCode.ANOTHER_ERROR.getCode());
+            return new VNPayResponse("Duplicate Call IPN", ResponseCode.SUCCESS.getCode());
         }
 
+        var bankCode = request.getParameter("vnp_BankCode");
+        var bank = getBank(bankCode);
+        payment.setBank(bank);
         if (Objects.equals("00", request.getParameter("vnp_ResponseCode"))) {
             payment.setStatus(PaymentConstant.Status.NETWORK_CONFIRMED);
         } else {
@@ -83,5 +85,9 @@ public class VNPayServiceImp extends BaseService {
     protected void validateDeposit(DepositRequest request) {
         super.validateDeposit(request);
         Assert.hasText(request.getMetadata().get("ipAddress").toString(), "ip_address must be not blank");
+        Assert.isTrue(
+                request.getAmount().longValue() >= property.getMinAmount(),
+                String.format("request amount must greater than or equal %d", property.getMinAmount())
+        );
     }
 }

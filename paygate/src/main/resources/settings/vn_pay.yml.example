@@ -1,11 +1,14 @@
 ## add vn_pay.yml file with similar properties
 external:
   vnpay:
+    version: 2.1.1
     url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
     returnUrl: https://yourapp.com/return
     hashSecret: your-secret
     tmnCode: your-code
     command: pay
+    minAmount: 10000
+    orderType: other
     time:
       formatter: yyyyMMddHHmmss
       zone: Asia/Ho_Chi_Minh

@@ -7,6 +7,5 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface IPaymentMapper {
-    @Mapping(target = "currency", source = "toCurrency")
     Payment toPayment(TransferRequest request);
 }

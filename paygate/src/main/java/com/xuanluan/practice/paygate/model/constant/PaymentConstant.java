@@ -23,4 +23,8 @@ public class PaymentConstant {
             vnpay
         }
     }
+
+    public static class Round {
+        public static final int DEFAULT = 2;
+    }
 }

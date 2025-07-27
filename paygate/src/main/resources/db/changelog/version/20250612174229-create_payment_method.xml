@@ -19,6 +19,18 @@
             <column name="code" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
+            <column name="withdrawal_fee" type="decimal" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="withdrawal_fee_percent" type="decimal" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="deposit_fee" type="decimal" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="deposit_fee_percent" type="decimal" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
             <column name="is_deleted" type="boolean" defaultValueBoolean="false"/>
         </createTable>
         <rollback>

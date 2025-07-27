@@ -1,6 +1,10 @@
 [
   {
     "code": "vnpay",
-    "name": "Cổng thanh toán VNPAY"
+    "name": "Cổng thanh toán VNPAY",
+    "withdrawalFee": 0,
+    "withdrawalFeePercent": 1.2,
+    "depositFee": 500,
+    "depositFeePercent": 0
   }
 ]

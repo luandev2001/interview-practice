@@ -8,6 +8,7 @@ import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Getter
@@ -20,4 +21,8 @@ public class PaymentMethod extends BaseEntity {
     private boolean isDeleted;
     @OneToMany(mappedBy = "paymentMethod")
     private List<Payment> payments;
+    private BigDecimal withdrawalFee;
+    private BigDecimal withdrawalFeePercent;
+    private BigDecimal depositFee;
+    private BigDecimal depositFeePercent;
 }

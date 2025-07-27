@@ -1,13 +1,17 @@
 package com.xuanluan.practice.paygate.service.imp.payment;
 
+import com.xuanluan.practice.paygate.model.constant.PaymentConstant;
+import com.xuanluan.practice.paygate.model.entity.Bank;
 import com.xuanluan.practice.paygate.model.entity.Payment;
 import com.xuanluan.practice.paygate.model.entity.PaymentMethod;
 import com.xuanluan.practice.paygate.model.exception.EntityLookupException;
 import com.xuanluan.practice.paygate.model.request.DepositRequest;
 import com.xuanluan.practice.paygate.model.request.TransferRequest;
 import com.xuanluan.practice.paygate.model.response.DepositResponse;
+import com.xuanluan.practice.paygate.repository.IBankRepository;
 import com.xuanluan.practice.paygate.repository.IPaymentMethodRepository;
 import com.xuanluan.practice.paygate.repository.IPaymentRepository;
+import com.xuanluan.practice.paygate.repository.scope.BankSpec;
 import com.xuanluan.practice.paygate.repository.scope.PaymentMethodSpec;
 import com.xuanluan.practice.paygate.service.IPaymentService;
 import com.xuanluan.practice.paygate.service.mapper.IPaymentMapper;
@@ -17,6 +21,8 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -26,6 +32,8 @@ public abstract class BaseService implements IPaymentService {
     protected IPaymentRepository paymentRepository;
     @Autowired
     protected IPaymentMethodRepository paymentMethodRepository;
+    @Autowired
+    protected IBankRepository bankRepository;
     @Autowired
     protected IPaymentMapper paymentMapper;
 
@@ -43,12 +51,17 @@ public abstract class BaseService implements IPaymentService {
     protected abstract DepositResponse handleDeposit(Payment payment, Map<String, Object> metaData);
 
     protected Payment buildDeposit(TransferRequest request) {
-        Payment payment = paymentMapper.toPayment(request);
-        payment.setPaymentMethod(getPaymentMethod(request.getPaymentMethodCode()));
-        payment.setReceivedAmount(request.getAmount());
-        payment.setFee(BigDecimal.ONE);
-        payment.setRate(BigDecimal.ONE);
-
+        var payment = paymentMapper.toPayment(request);
+        var paymentMethod = getPaymentMethod(request.getPaymentMethodCode());
+        payment.setPaymentMethod(paymentMethod);
+        // fee = (amount * deposit_fee_percent / 100 ) + deposit_fee
+        var fee = request.getAmount()
+                .multiply(paymentMethod.getDepositFeePercent())
+                .divide(BigDecimal.valueOf(100), MathContext.DECIMAL32)
+                .add(paymentMethod.getDepositFee())
+                .setScale(PaymentConstant.Round.DEFAULT, RoundingMode.DOWN);
+        payment.setFee(fee);
+        payment.setReceivedAmount(request.getAmount().subtract(fee));
         return payment;
     }
 
@@ -70,5 +83,9 @@ public abstract class BaseService implements IPaymentService {
         Assert.isTrue(Objects.equals(paymentMethod.getCode().name(), getMethodCode()), "payment_method is not match");
 
         return paymentMethod;
+    }
+
+    protected Bank getBank(String code) {
+        return StringUtils.hasLength(code) ? bankRepository.findOne(BankSpec.activeWithCode(List.of(code))).orElse(null) : null;
     }
 }

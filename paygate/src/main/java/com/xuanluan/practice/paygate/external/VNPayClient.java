@@ -35,7 +35,7 @@ public class VNPayClient {
     public String createUrl(Payment payment, Map<String, Object> metadata) {
         Map<String, String> params = buildDepositDefault();
         params.put("vnp_TxnRef", payment.getId().toString());
-        params.put("vnp_Amount", String.valueOf(payment.getReceivedAmount().longValue() * 100));
+        params.put("vnp_Amount", String.valueOf(payment.getAmount().longValue() * 100));
         params.put("vnp_OrderInfo", payment.getDescription());
         params.put("vnp_IpAddr", metadata.get("ipAddress").toString());
 

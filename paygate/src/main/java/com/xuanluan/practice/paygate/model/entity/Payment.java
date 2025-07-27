@@ -16,16 +16,16 @@ public class Payment extends BaseEntity {
     private BigDecimal amount;
     private BigDecimal receivedAmount;
     private BigDecimal fee;
-    private String currency;
-    private BigDecimal rate;
     @ManyToOne(fetch = FetchType.LAZY)
     private PaymentMethod paymentMethod;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Bank bank;
     private String description;
     @Enumerated(EnumType.ORDINAL)
     private PaymentConstant.Status status;
 
     @PrePersist
     private void prePersist() {
-        status = PaymentConstant.Status.PENDING;
+        if (status == null) status = PaymentConstant.Status.PENDING;
     }
 }

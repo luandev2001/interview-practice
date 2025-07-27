@@ -1,8 +1,11 @@
 package com.xuanluan.practice.paygate.model.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -15,4 +18,6 @@ public class Bank extends BaseEntity {
     private String swiftCode;
     private String logo;
     private boolean isDeleted;
+    @OneToMany(mappedBy = "bank")
+    private List<Payment> payments;
 }

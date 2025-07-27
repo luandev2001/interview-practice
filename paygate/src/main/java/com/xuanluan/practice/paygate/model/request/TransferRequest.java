@@ -11,8 +11,6 @@ import java.util.UUID;
 public class TransferRequest {
     private String paymentMethodCode;
     private BigDecimal amount;
-    private String fromCurrency;
-    private String toCurrency;
     private UUID userId;
     private String description;
 }

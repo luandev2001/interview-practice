@@ -19,17 +19,6 @@ bảo dữ liệu lớn, an toàn, đồng bộ trạng thái giao dịch và t�
 
 ---
 
-## 🧩 Thành phần chính
-
-- `TransactionController`: tạo giao dịch, redirect user đến VNPay
-- `PaymentCallbackController`: nhận callback từ VNPay
-- `TransactionService`: thực hiện nghiệp vụ (create, update, validate)
-- **PostgreSQL**:
-    - Bảng `transactions` lưu giao dịch
-    - Trường trạng thái: `PENDING`, `SUCCESS`, `FAILED`
-
----
-
 ## 🔐 Kỹ thuật xử lý an toàn
 
 - Dùng `@Transactional` đảm bảo rollback khi có lỗi
@@ -45,8 +34,6 @@ bảo dữ liệu lớn, an toàn, đồng bộ trạng thái giao dịch và t�
 - ✅ Tạo giao dịch hợp lệ → trả về URL VNPay
 - ✅ VNPay callback thành công → cập nhật trạng thái `SUCCESS`
 - ✅ VNPay callback lặp lại → hệ thống vẫn **idempotent** (trả về OK, không thay đổi dữ liệu)
-- ❌ Giao dịch sai chữ ký → trả về 400, không cập nhật
-- ⚠️ Tình huống mất kết nối VNPay → ghi lại lỗi, retry bằng cron job
 
 ---
 
@@ -55,13 +42,11 @@ bảo dữ liệu lớn, an toàn, đồng bộ trạng thái giao dịch và t�
 - Kết hợp **Outbox Pattern** để gửi trạng thái giao dịch ra Kafka an toàn
 - Dùng **Redis** để chống spam callback hoặc xử lý timeout
 - Ghi **audit log toàn bộ luồng** bằng interceptor + Kafka
-- Xây dựng **dashboard realtime** theo dõi trạng thái giao dịch bằng dữ liệu Kafka hoặc Redis
 
 ---
 
 ## 📌 Gợi ý thêm
 
-- Ghi log đầy đủ các bước ra Sentry, ELK hoặc Datadog
 - Có cơ chế alert nếu một giao dịch nằm ở `PENDING` quá lâu (>10 phút)
 - Đảm bảo bảo mật callback bằng `secure hash`, IP whitelist hoặc token
 

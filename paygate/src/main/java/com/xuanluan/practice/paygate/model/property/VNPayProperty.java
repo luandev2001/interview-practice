@@ -18,6 +18,7 @@ public class VNPayProperty {
     private String currencyCode = "VND";
     private String orderType = "other";
     private Time time = new Time();
+    private long minAmount = 10_000;
 
     @Getter
     @Setter
