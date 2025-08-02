@@ -7,6 +7,7 @@ import com.xuanluan.practice.paygate.model.property.VNPayProperty;
 import com.xuanluan.practice.paygate.model.request.DepositRequest;
 import com.xuanluan.practice.paygate.model.response.DepositResponse;
 import com.xuanluan.practice.paygate.model.response.external.VNPayResponse;
+import io.sentry.Sentry;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,7 +55,7 @@ public class VNPayServiceImp extends BaseService {
             return new VNPayResponse("Payment Not Found", ResponseCode.ANOTHER_ERROR.getCode());
         }
         if (payment.getStatus() != PaymentConstant.Status.PENDING) {
-            log.error("[Payment][Duplicate IPN] Request params: {}", body);
+            Sentry.captureMessage("[Payment][Duplicate IPN] paymentId: " + payment.getId());
             return new VNPayResponse("Duplicate Call IPN", ResponseCode.SUCCESS.getCode());
         }
 

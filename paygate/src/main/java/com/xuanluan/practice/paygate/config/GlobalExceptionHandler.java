@@ -2,7 +2,7 @@ package com.xuanluan.practice.paygate.config;
 
 import com.xuanluan.practice.paygate.model.exception.BadRequestException;
 import com.xuanluan.practice.paygate.model.response.external.WrapperResponse;
-import com.xuanluan.practice.paygate.util.SentryUtil;
+import io.sentry.Sentry;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<WrapperResponse<?>> handleOtherException(Throwable exception, HttpServletRequest request) {
-        SentryUtil.captureException(exception, request);
+        Sentry.captureException(exception);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(buildResponse(exception.getMessage()));
     }
 

@@ -5,6 +5,7 @@ import com.xuanluan.practice.paygate.model.constant.PaymentConstant;
 import com.xuanluan.practice.paygate.model.response.external.VNPayResponse;
 import com.xuanluan.practice.paygate.service.IPaymentService;
 import com.xuanluan.practice.paygate.service.imp.payment.PaymentFactory;
+import io.sentry.Sentry;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +28,7 @@ public class PaymentIpnController {
             IPaymentService paymentService = paymentFactory.get(PaymentConstant.Method.Code.vnpay.name());
             return paymentService.ipn(request);
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            Sentry.captureException(e);
             return new VNPayResponse("Internal Error", VNPay.ResponseCode.ANOTHER_ERROR.getCode());
         }
     }

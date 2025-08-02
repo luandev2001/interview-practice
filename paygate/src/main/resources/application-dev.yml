@@ -45,7 +45,13 @@ logging:
   level:
     org:
       hibernate:
-#        SQL: DEBUG
-#        type.descriptor.sql.BasicBinder: TRACE
+        #        SQL: DEBUG
+        #        type.descriptor.sql.BasicBinder: TRACE
         engine.transaction: DEBUG
       #        transaction: DEBUG
+sentry:
+  dsn: Your-DSN
+  environment: development
+  traces-sample-rate: 0.2
+  debug: true
+  send-default-pii: true          # Gửi thông tin nhạy cảm như IP, cookie, header
