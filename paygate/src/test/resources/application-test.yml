@@ -1,0 +1,52 @@
+spring:
+  datasource:
+    username: postgres
+    password: 123456
+    url: jdbc:postgresql://localhost:5432/test_interview_practice
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+  liquibase:
+    enabled: false
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      auto-offset-reset: earliest
+      group-id: test-group
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+# VNPay test configuration
+external:
+  vnpay:
+    version: 2.1.1
+    url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+    returnUrl: https://yourapp.com/payment/ipns/vnpay
+    hashSecret: your-secret
+    tmnCode: your-code
+    command: pay
+    minAmount: 10000
+    orderType: other
+    time:
+      formatter: yyyyMMddHHmmss
+      zone: Asia/Ho_Chi_Minh
+      expireMinute: 60
+
+# Logging for test
+logging:
+  level:
+    com.xuanluan.practice.paygate: DEBUG
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# Test specific settings
+test:
+  payment:
+    default-amount: 10000
+    default-description: "Test payment"
+    default-user-id: "550e8400-e29b-41d4-a716-446655440000" 

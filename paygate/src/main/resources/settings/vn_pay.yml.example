@@ -3,7 +3,7 @@ external:
   vnpay:
     version: 2.1.1
     url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
-    returnUrl: https://yourapp.com/return
+    returnUrl: https://yourapp.com/payment/ipns/vnpay
     hashSecret: your-secret
     tmnCode: your-code
     command: pay

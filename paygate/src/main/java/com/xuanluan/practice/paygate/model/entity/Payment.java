@@ -23,6 +23,7 @@ public class Payment extends BaseEntity {
     private String description;
     @Enumerated(EnumType.ORDINAL)
     private PaymentConstant.Status status;
+    private String externalId;
 
     @PrePersist
     private void prePersist() {

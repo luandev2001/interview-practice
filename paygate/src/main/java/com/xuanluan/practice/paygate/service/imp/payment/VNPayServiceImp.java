@@ -61,6 +61,8 @@ public class VNPayServiceImp extends BaseService {
         var bankCode = request.getParameter("vnp_BankCode");
         var bank = getBank(bankCode);
         payment.setBank(bank);
+        payment.setExternalId(request.getParameter("vnp_TransactionNo"));
+
         if (Objects.equals("00", request.getParameter("vnp_ResponseCode"))) {
             payment.setStatus(PaymentConstant.Status.NETWORK_CONFIRMED);
         } else {
