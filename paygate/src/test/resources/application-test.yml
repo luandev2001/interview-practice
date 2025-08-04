@@ -9,14 +9,6 @@ spring:
     show-sql: true
   liquibase:
     enabled: false
-  kafka:
-    bootstrap-servers: localhost:9092
-    consumer:
-      auto-offset-reset: earliest
-      group-id: test-group
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 # VNPay test configuration
 external:
