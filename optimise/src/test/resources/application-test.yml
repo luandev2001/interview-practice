@@ -1,0 +1,62 @@
+spring:
+  application:
+    name: optimise-service-test
+  
+  # Test Database Configuration (H2 in-memory)
+  
+  # JOOQ Configuration
+  jooq:
+    sql-dialect: H2
+  
+  # Virtual Threads Configuration for testing
+  task:
+    execution:
+      pool:
+        core-size: 10
+        max-size: 20
+        queue-capacity: 100
+        keep-alive: 30s
+        thread-name-prefix: "test-virtual-"
+
+# Server Configuration
+server:
+  port: 0  # Random port for testing
+  threads:
+    virtual:
+      enabled: true
+
+# Logging Configuration
+logging:
+  level:
+    com.xuanluan.practice.optimise: DEBUG
+    org.jooq: DEBUG
+    org.springframework.web: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+# CSV Processing Configuration for testing
+csv:
+  processing:
+    batch-size: 100
+    max-memory-usage: 128MB
+    temp-directory: /tmp/csv-processing-test
+    univocity:
+      buffer-size: 1024
+    opencsv:
+      buffer-size: 512
+    apache-csv:
+      buffer-size: 512
+    jackson-csv:
+      buffer-size: 1024
+
+# Performance Monitoring for testing
+performance:
+  monitoring:
+    enabled: false
+    metrics:
+      enabled: false
+    profiling:
+      enabled: false
+    database:
+      query-logging: false
+      slow-query-threshold: 5000ms 

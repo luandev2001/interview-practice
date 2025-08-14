@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    username: postgres
+    password: 123456
+    url: jdbc:postgresql://localhost:5432/optimise_db
+  shell:
+    interactive:
+      enabled: true
+  jooq:
+    sql-dialect: postgres
+logging:
+  level:
+    org:
+      hibernate:
+        #        SQL: DEBUG
+        #        type.descriptor.sql.BasicBinder: TRACE
+        engine.transaction: DEBUG
+      #        transaction: DEBUG
+sentry:
+  dsn: Your-DSN
+  environment: development
+  traces-sample-rate: 0.2
+  debug: true
+  send-default-pii: true          # Gửi thông tin nhạy cảm như IP, cookie, header
