@@ -10,15 +10,15 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 import java.util.concurrent.TimeUnit;
 
-@BenchmarkMode(Mode.AverageTime)
+@BenchmarkMode(Mode.SingleShotTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @State(Scope.Benchmark)
-public class CsvBenchmark {
+public class GenerateCsvBenchmark {
     public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
-                .include(CsvBenchmark.class.getSimpleName())
-                .warmupIterations(0)
-                .measurementIterations(1)
+                .include(GenerateCsvBenchmark.class.getSimpleName())
+                .warmupIterations(1)
+                .measurementIterations(5)
                 .forks(1)
                 .shouldDoGC(true)
                 .shouldFailOnError(true)
@@ -31,9 +31,8 @@ public class CsvBenchmark {
         new Runner(opt).run();
     }
 
-
     @Benchmark
     public void dummyBenchmark() {
-        CsvScript.generate(20_000_000);
+        CsvScript.generateUser(20_000_000);
     }
 }

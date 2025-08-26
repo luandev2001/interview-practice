@@ -82,11 +82,6 @@
             <version>${opencsv.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-csv</artifactId>
-            <version>${apache-csv.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.simpleflatmapper</groupId>
             <artifactId>sfm-csv</artifactId>
             <version>${sfm-csv.version}</version>
