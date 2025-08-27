@@ -2,8 +2,7 @@ package com.xuanluan.practice.optimise.benchmark;
 
 import com.xuanluan.practice.optimise.model.parser.UserCsvParser;
 import com.xuanluan.practice.optimise.service.strategy.CsvStrategy;
-import com.xuanluan.practice.optimise.service.strategy.OpenCsvStrategy;
-import com.xuanluan.practice.optimise.service.strategy.SfmCsvStrategy;
+import com.xuanluan.practice.optimise.service.strategy.UnivocityCsvStrategy;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.results.format.ResultFormatType;
 import org.openjdk.jmh.runner.Runner;
@@ -41,7 +40,7 @@ public class LibraryCsvBenchmark {
 
     @Setup(Level.Trial)
     public void setup() {
-        this.strategy = new OpenCsvStrategy<>();
+        this.strategy = new UnivocityCsvStrategy<>();
         this.file = new File("optimise/bigfile.csv");
         this.typeClass = UserCsvParser.class;
     }
@@ -51,13 +50,13 @@ public class LibraryCsvBenchmark {
         strategy.loadToObject(file, typeClass);
     }
 
-//    @Benchmark
-//    public void loadRaw() throws Exception {
-//        strategy.loadRaw(file);
-//    }
+    @Benchmark
+    public void loadRaw() throws Exception {
+        strategy.loadRaw(file);
+    }
 
-//    @Benchmark
-//    public void export() throws Exception {
-//        strategy.export(file, strategy.loadToObject(file, typeClass));
-//    }
+    @Benchmark
+    public void export() throws Exception {
+        strategy.export(file, strategy.loadToObject(file, typeClass));
+    }
 }

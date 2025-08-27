@@ -1,13 +1,13 @@
 package com.xuanluan.practice.optimise.service.strategy;
 
 import com.univocity.parsers.common.processor.BeanListProcessor;
+import com.univocity.parsers.common.processor.RowListProcessor;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 import com.univocity.parsers.csv.CsvWriter;
 import com.univocity.parsers.csv.CsvWriterSettings;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.Writer;
 import java.util.List;
@@ -20,7 +20,7 @@ public class UnivocityCsvStrategy<T> implements CsvStrategy<T> {
         settings.setProcessor(rowProcessor);
         settings.setHeaderExtractionEnabled(true);
         CsvParser parser = new CsvParser(settings);
-        parser.parse(new FileReader(file));
+        parser.parse(file);
         return rowProcessor.getBeans();
     }
 
@@ -29,7 +29,8 @@ public class UnivocityCsvStrategy<T> implements CsvStrategy<T> {
         CsvParserSettings settings = new CsvParserSettings();
         settings.setHeaderExtractionEnabled(false);
         CsvParser parser = new CsvParser(settings);
-        return parser.parseAll(new FileReader(file));
+        parser.parse(file);
+        return parser.parseAll();
     }
 
     @Override
